@@ -3,6 +3,21 @@
 require_once 'fieldvaluepermission.civix.php';
 
 /**
+ * Implements hook_civicrm_buildForm().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ */
+function fieldvaluepermission_civicrm_buildform($formName, &$form) {
+  if ($formName == 'CRM_ACL_Form_ACL') {
+    // Add Option for Contact with Custom Field Value
+    $objectTypes =& $form->getElement('object_type');
+    $elements =& $objectTypes->getElements();
+    $elements[] = $form->createElement('radio', NULL, NULL, 'Contact with Custom Field Value', 100);
+    //TODO add/hide fields pick custom field and value see ex: https://github.com/civicrm/civicrm-core/blob/master/CRM/ACL/Form/ACL.php#L47
+  }
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
