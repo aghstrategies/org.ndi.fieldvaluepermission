@@ -21,15 +21,13 @@ CRM.$(function ($) {
   showCustomFieldInputs();
   $("input[name='object_type']").change(showCustomFieldInputs);
 
-  // TODO deal with default value
+  // TODO deal with default value if editing an existing acl
   // var vid = CRM.vars.LogVolHours.vid;
   // if (vid > 0) {
   //   $('#volunteer_project_select').val(vid).trigger('change');
   // }
   var setUpValueInput = function () {
     var $customFieldId = $('#custom_field_id').val();
-
-    // $customFieldId = 13;
     if ($customFieldId > 0) {
       CRM.api3('CustomField', 'getSingle', {
         sequential: 1,

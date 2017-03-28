@@ -33,6 +33,29 @@ function fieldvaluepermission_civicrm_buildForm($formName, &$form) {
 }
 
 /**
+ * Implements hook_civicrm_postProcess().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postProcess
+ */
+function fieldvaluepermission_civicrm_postProcess($formName, &$form) {
+  if ($formName == 'CRM_ACL_Form_ACL' && $form->_submitValues['object_type'] == 100) {
+    $formValues = array(
+      'custom_' . $form->_submitValues['custom_field_id'] => array(
+        'IN' => array($form->_submitValues['custom_field_value']),
+      ),
+    );
+    $hiddenSmartParams = array(
+      'group_type' => array('2' => 1),
+      'form_values' => $formValues,
+      'saved_search_id' => NULL,
+      'search_custom_id' => NULL,
+      'search_context' => 'advanced',
+    );
+    list($smartGroupId, $savedSearchId) = CRM_Contact_BAO_Group::createHiddenSmartGroup($hiddenSmartParams);
+  }
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
