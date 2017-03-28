@@ -7,32 +7,28 @@ require_once 'fieldvaluepermission.civix.php';
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
  */
-function fieldvaluepermission_civicrm_buildform($formName, &$form) {
+function fieldvaluepermission_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_ACL_Form_ACL') {
     // Add Option for Contact with Custom Field Value
     $objectTypes =& $form->getElement('object_type');
     $elements =& $objectTypes->getElements();
     $elements[] = $form->createElement('radio', NULL, NULL, 'Contact with Custom Field Value', 100);
-
     //TODO add/hide fields pick custom field and value see ex: https://github.com/civicrm/civicrm-core/blob/master/CRM/ACL/Form/ACL.php#L47
-    // Assumes templates are in a templates folder relative to this file.
-    if (empty($form->elementExists('custom_field_value'))) {
-      $form->addEntityRef('custom_field_id', ts('Custom Field'), array(
-        'entity' => 'CustomField',
-        'placeholder' => ts('- Select Custom Field -'),
-        'select' => array('minimumInputLength' => 0),
-        'api' => array(
-          'params' => array('custom_group_id.extends' => array('IN' => array("Individual", "Organization", "Contact"))),
-          'label_field' => 'label',
-        ),
-      ));
-      $form->add('text', 'custom_field_value', ts('Value to match'));
-      $templatePath = realpath(dirname(__FILE__) . "/templates");
-      CRM_Core_Region::instance('form-bottom')->add(array(
-        'template' => "{$templatePath}/customFieldId.tpl",
-      ));
-      CRM_Core_Resources::singleton()->addScriptFile('org.ndi.fieldvaluepermission', 'js/aclform.js');
-    }
+    $form->addEntityRef('custom_field_id', ts('Custom Field'), array(
+      'entity' => 'CustomField',
+      'placeholder' => ts('- Select Custom Field -'),
+      'select' => array('minimumInputLength' => 0),
+      'api' => array(
+        'params' => array('custom_group_id.extends' => array('IN' => array("Individual", "Organization", "Contact"))),
+        'label_field' => 'label',
+      ),
+    ));
+    $form->add('text', 'custom_field_value', ts('Value to match') . $random);
+    $resources = CRM_Core_Resources::singleton();
+    CRM_Core_Region::instance('form-body')->add(array(
+      'template' => $resources->getPath('org.ndi.fieldvaluepermission', 'templates/customFieldId.tpl'),
+    ));
+    $resources->addScriptFile('org.ndi.fieldvaluepermission', 'js/aclform.js');
   }
 }
 
