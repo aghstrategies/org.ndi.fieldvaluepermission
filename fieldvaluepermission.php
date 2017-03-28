@@ -23,7 +23,7 @@ function fieldvaluepermission_civicrm_buildForm($formName, &$form) {
         'label_field' => 'label',
       ),
     ));
-    $form->add('text', 'custom_field_value', ts('Value to match') . $random);
+    $form->add('text', 'custom_field_value', ts('Value to match'));
     $resources = CRM_Core_Resources::singleton();
     CRM_Core_Region::instance('form-body')->add(array(
       'template' => $resources->getPath('org.ndi.fieldvaluepermission', 'templates/customFieldId.tpl'),
