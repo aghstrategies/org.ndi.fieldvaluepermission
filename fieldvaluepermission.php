@@ -13,7 +13,26 @@ function fieldvaluepermission_civicrm_buildform($formName, &$form) {
     $objectTypes =& $form->getElement('object_type');
     $elements =& $objectTypes->getElements();
     $elements[] = $form->createElement('radio', NULL, NULL, 'Contact with Custom Field Value', 100);
+
     //TODO add/hide fields pick custom field and value see ex: https://github.com/civicrm/civicrm-core/blob/master/CRM/ACL/Form/ACL.php#L47
+    // Assumes templates are in a templates folder relative to this file.
+    if (empty($form->elementExists('custom_field_value'))) {
+      $form->addEntityRef('custom_field_id', ts('Custom Field'), array(
+        'entity' => 'CustomField',
+        'placeholder' => ts('- Select Custom Field -'),
+        'select' => array('minimumInputLength' => 0),
+        'api' => array(
+          'params' => array('custom_group_id.extends' => array('IN' => array("Individual", "Organization", "Contact"))),
+          'label_field' => 'label',
+        ),
+      ));
+      $form->add('text', 'custom_field_value', ts('Value to match'));
+      $templatePath = realpath(dirname(__FILE__) . "/templates");
+      CRM_Core_Region::instance('form-bottom')->add(array(
+        'template' => "{$templatePath}/customFieldId.tpl",
+      ));
+      CRM_Core_Resources::singleton()->addScriptFile('org.ndi.fieldvaluepermission', 'js/aclform.js');
+    }
   }
 }
 
