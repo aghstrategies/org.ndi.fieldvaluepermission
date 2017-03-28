@@ -9,6 +9,10 @@ require_once 'fieldvaluepermission.civix.php';
  */
 function fieldvaluepermission_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_ACL_Form_ACL') {
+    // if delete then this added code is not necessary
+    if ($form->_action & CRM_Core_Action::DELETE) {
+      return;
+    }
     // Add Option for Contact with Custom Field Value
     $objectTypes =& $form->getElement('object_type');
     $elements =& $objectTypes->getElements();
@@ -52,6 +56,16 @@ function fieldvaluepermission_civicrm_postProcess($formName, &$form) {
       'search_context' => 'advanced',
     );
     list($smartGroupId, $savedSearchId) = CRM_Contact_BAO_Group::createHiddenSmartGroup($hiddenSmartParams);
+    $params = $form->controller->exportValues($form->getVar('_name'));
+    $params['is_active'] = CRM_Utils_Array::value('is_active', $params, FALSE);
+    $params['deny'] = 0;
+    $params['entity_table'] = 'civicrm_acl_role';
+    $params['object_table'] = 'civicrm_saved_search';
+    $params['object_id'] = $smartGroupId;
+    if ($form->getVar('_id')) {
+      $params['id'] = $form->getVar('_id');
+    }
+    CRM_ACL_BAO_ACL::create($params);
   }
 }
 
