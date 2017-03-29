@@ -33,6 +33,32 @@ function fieldvaluepermission_civicrm_buildForm($formName, &$form) {
       'template' => $resources->getPath('org.ndi.fieldvaluepermission', 'templates/customFieldId.tpl'),
     ));
     $resources->addScriptFile('org.ndi.fieldvaluepermission', 'js/aclform.js');
+    // Updating so need to set defaults on the form for reference add is 1
+    if ($form->_action == 2 && !empty($form->_defaultValues['group_id'])) {
+      try {
+        $result = civicrm_api3('Group', 'getsingle', array(
+          'id' => $form->_defaultValues['object_id'],
+          'api.SavedSearch.getsingle' => array('id' => "\$value.saved_search_id"),
+        ));
+      }
+      catch (CiviCRM_API3_Exception $e) {
+        $error = $e->getMessage();
+        CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'org.ndi.fieldvaluepermission')));
+      }
+      if ($result['is_hidden']) {
+        $defaults = array();
+        $defaults['object_type'] = 100;
+        if (!empty(array_keys($result['api.SavedSearch.getsingle']['form_values'])[0])) {
+          $customField = array_keys($result['api.SavedSearch.getsingle']['form_values'])[0];
+          $defaults['custom_field_id'] = substr($customField, 7);
+        }
+        // TODO make sure works with text and select2
+        if (!empty($result['api.SavedSearch.getsingle']['form_values'][$customField]['IN'][0])) {
+          $defaults['custom_field_value'] = $result['api.SavedSearch.getsingle']['form_values'][$customField]['IN'][0];
+        }
+        $form->setDefaults($defaults);
+      }
+    }
   }
 }
 
