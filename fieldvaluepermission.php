@@ -81,6 +81,9 @@ function fieldvaluepermission_civicrm_postProcess($formName, &$form) {
       'search_custom_id' => NULL,
       'search_context' => 'advanced',
     );
+    if (!empty($form->getVar('_values')['object_id'])) {
+      $hiddenSmartParams['saved_search_id'] = $form->getVar('_values')['object_id'];
+    }
     list($smartGroupId, $savedSearchId) = CRM_Contact_BAO_Group::createHiddenSmartGroup($hiddenSmartParams);
     $params = $form->controller->exportValues($form->getVar('_name'));
     $params['is_active'] = CRM_Utils_Array::value('is_active', $params, FALSE);
