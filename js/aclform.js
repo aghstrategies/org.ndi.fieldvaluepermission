@@ -20,12 +20,6 @@ CRM.$(function ($) {
 
   showCustomFieldInputs();
   $("input[name='object_type']").change(showCustomFieldInputs);
-
-  // TODO deal with default value if editing an existing acl
-  // var vid = CRM.vars.LogVolHours.vid;
-  // if (vid > 0) {
-  //   $('#volunteer_project_select').val(vid).trigger('change');
-  // }
   var setUpValueInput = function () {
     var $customFieldId = $('#custom_field_id').val();
     if ($customFieldId > 0) {
@@ -50,6 +44,8 @@ CRM.$(function ($) {
           $('#custom_field_value').select2('destroy');
         }
       });
+    } else {
+      $('#custom_field_value').select2('destroy');
     }
   };
 
